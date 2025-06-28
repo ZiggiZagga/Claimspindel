@@ -19,14 +19,14 @@ spring:
             - id: s3-dev-route
               uri: lb://brazz-nossel
               predicates:
-                - Path=/s3
+                - Path=/**
                 - Claims=role,devrole
               filters:
               - RewritePath=/s3,/s3/dev
             - id: s3-admin-route
               uri: lb://brazz-nossel
               predicates:
-                - Path=/s3
+                - Path=/**
                 - Claims=role,adminrole	
               filters:
               - RewritePath=/s3,/s3/admin							
