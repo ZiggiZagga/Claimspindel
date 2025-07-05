@@ -1,3 +1,9 @@
+logging:
+  level:
+    com:
+      ironbucket: DEBUG
+    org:
+      '[springframework]': INFO
 server:
   port: 0
 
@@ -7,6 +13,10 @@ eureka:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
     region: ${EUREKA_REGION:dev-region-1}
 
+ironbucket:
+  security:
+    secret: ${IRON_BUCKET_SECRET_KEY:my-super-secret-key}
+
 spring:
   application:
     name: claimspindel
@@ -15,21 +25,16 @@ spring:
     gateway:
       server:
         webflux:
+          default-filters:
+            - IronBucketVerification					
           routes:
             - id: s3-dev-route
               uri: lb://brazz-nossel
               predicates:
                 - Path=/**
-                - Claims=role,devrole
+                - Claims=role,ROLE_DATA_INGESTOR
               filters:
-              - RewritePath=/s3,/s3/dev
-            - id: s3-admin-route
-              uri: lb://brazz-nossel
-              predicates:
-                - Path=/**
-                - Claims=role,adminrole	
-              filters:
-              - RewritePath=/s3,/s3/admin							
+                - RewritePath=/storage/s3/(?<segment>.*), /storage/s3/upload/${segment}  					
           globalcors:
             add-to-simple-url-handler-mapping: true
           discovery:
